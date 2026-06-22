@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>楽天モバイル 野球ファン節約シミュレーター</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1N260QQX6D"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1N260QQX6D');
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DotGothic16&family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink:      #CC0066;
+  --pink-dark: #99004D;
+  --pink-mid:  #E0006F;
+  --green:     #1A6B2A;
+  --green-dk:  #0F4018;
+  --field:     #2D6A1F;
+  --cream:     #F8F5EE;
+  --cream-dk:  #ECE7DA;
+  --gold:      #FFD700;
+  --amber:     #FFAA00;
+  --board-bg:  #070707;
+  --text:      #1A1A1A;
+  --text-sub:  #555;
+  --border:    #D5CCBB;
+  --white:     #FFFFFF;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background-color: #72b038;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='2' y1='1' x2='4' y2='7' stroke='%234a8822' stroke-width='1.4' opacity='0.7'/%3E%3Cline x1='8' y1='4' x2='7' y2='10' stroke='%234a8822' stroke-width='1.4' opacity='0.7'/%3E%3Cline x1='11' y1='0' x2='12' y2='5' stroke='%235a9a28' stroke-width='1' opacity='0.5'/%3E%3Cline x1='5' y1='9' x2='6' y2='14' stroke='%235a9a28' stroke-width='1' opacity='0.5'/%3E%3Cline x1='0' y1='6' x2='1' y2='11' stroke='%234a8822' stroke-width='0.8' opacity='0.4'/%3E%3C/svg%3E");
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   HERO – STADIUM
+━━━━━━━━━━━━━━━━━━ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: #0a1740;
+}
+.hero-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.hero-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px clamp(14px, 4vw, 44px);
+  z-index: 5;
+  pointer-events: none;
+}
+.hero-center .led-frame {
+  width: min(620px, 86%);
+  margin: 0;
+  pointer-events: auto;
+}
+.sb-trim {
+  position: absolute;
+  left: 7px; right: 7px; top: 5px; height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #1d6f30, #37a850, #1d6f30);
+  box-shadow: 0 0 6px rgba(50,200,90,.5);
+}
+.hero-tagline {
+  margin-top: clamp(12px, 2.4vw, 22px);
+  text-align: center;
+  font-size: clamp(12px, 2.7vw, 18px);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 7px rgba(0,0,0,0.85);
+  letter-spacing: .5px;
+}
+.hero-tagline .tag-pink {
+  color: #ff4fb0;
+  text-shadow: 0 0 12px rgba(255,70,165,0.6);
+}
+
+/* LED フレーム */
+.led-frame {
+  position: relative;
+  background: var(--board-bg);
+  border: 3px solid #404040;
+  border-radius: 8px;
+  padding: 10px 22px 7px;
+  box-shadow:
+    0 0 0 1px #5A5A5A,
+    0 0 28px rgba(255,210,0,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 8px 36px rgba(0,0,0,0.9);
+  margin-bottom: 12px;
+}
+.led-frame::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border: 1px solid rgba(255,210,0,0.1);
+  border-radius: 4px;
+  pointer-events: none;
+}
+.led-dots {
+  position: absolute; inset: 0; border-radius: 7px; overflow: hidden; pointer-events: none;
+  background-image: radial-gradient(circle at center, transparent 38%, rgba(0,0,0,0.62) 38%);
+  background-size: 5px 5px;
+}
+.led-title {
+  font-family: 'DotGothic16', monospace;
+  color: var(--gold);
+  font-size: clamp(19px, 3.8vw, 32px);
+  line-height: 1.65;
+  letter-spacing: 2px;
+  position: relative; z-index: 1;
+  text-shadow:
+    0 0 3px rgba(255,235,0,0.7),
+    0 0 8px rgba(255,215,0,0.45),
+    0 0 18px rgba(255,200,0,0.2);
+}
+.hero-sub {
+  text-align: center;
+  font-size: clamp(12px, 3vw, 15px);
+  font-weight: 700;
+  color: #FF55BB;
+  text-shadow: 0 0 14px rgba(255,50,150,0.5);
+  letter-spacing: .5px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   MAIN CONTENT
+━━━━━━━━━━━━━━━━━━ */
+.main-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 22px 14px 0;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.two-col > * { min-width: 0; }
+@media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ━━ PANEL ━━ */
+.panel {
+  background: var(--cream);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.12);
+  border: 1px solid var(--cream-dk);
+}
+
+.panel-head {
+  background: #111;
+  border-bottom: 2px solid #000;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-head-ball { font-size: 18px; flex-shrink: 0; }
+.panel-head-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  background: var(--pink);
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.panel-head-title { font-size: 14px; font-weight: 700; color: #fff; }
+
+.panel-body { padding: 18px; }
+
+/* ━━ FORM ━━ */
+.q-block { margin-bottom: 20px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+.q-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--pink); color: #fff;
+  font-size: 12px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.q-label { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; }
+
+.field-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+}
+.field-row:last-child { margin-bottom: 0; }
+.field-label { font-size: 11px; color: var(--text-sub); white-space: nowrap; flex-shrink: 0; }
+
+.fee-input {
+  flex: 1; border: 2px solid var(--border); border-radius: 8px;
+  padding: 9px 12px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+  color: var(--text); background: var(--white); outline: none;
+  transition: border-color .2s;
+  -moz-appearance: textfield;
+}
+.fee-input::-webkit-inner-spin-button,
+.fee-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.fee-input:focus { border-color: var(--pink); }
+.fee-input::placeholder { color: #CCC; font-size: 14px; }
+
+.data-select {
+  flex: 1; border: 2px solid var(--border); border-radius: 8px;
+  padding: 9px 12px;
+  font-family: 'Noto Sans JP', sans-serif; font-size: 13px;
+  color: var(--text); background: var(--white); outline: none;
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23CC0066' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  transition: border-color .2s;
+}
+.data-select:focus { border-color: var(--pink); }
+.field-unit { font-size: 13px; color: var(--text-sub); white-space: nowrap; }
+
+.sub-label { font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+
+/* ━━ LEAGUE BTNS ━━ */
+.league-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.league-btn-full { grid-column: 1 / -1; }
+
+.l-btn {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 12px 8px;
+  background: var(--white); border: 2px solid var(--border);
+  border-radius: 12px; cursor: pointer;
+  transition: all .2s; user-select: none; -webkit-user-select: none;
+}
+.l-btn:hover { border-color: var(--pink); background: #FFF5FA; }
+.l-btn.selected { border-color: var(--pink); background: #FFF0F7; box-shadow: 0 0 0 3px rgba(204,0,102,0.1); }
+.l-btn input { position: absolute; opacity: 0; width: 0; height: 0; }
+.l-btn-icon { font-size: 26px; line-height: 1; }
+.l-btn-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.l-btn.selected .l-btn-name { color: var(--pink); }
+.l-btn-ck {
+  position: absolute; top: 5px; right: 5px;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--pink); color: #fff;
+  font-size: 8px; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+}
+.l-btn.selected .l-btn-ck { opacity: 1; }
+
+/* ━━ SERVICE BTNS ━━ */
+.svc-grid-top    { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.svc-grid-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 7px; }
+
+.s-btn {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 6px 8px;
+  background: var(--white); border: 2px solid var(--border);
+  border-radius: 10px; cursor: pointer;
+  transition: all .2s; user-select: none; -webkit-user-select: none;
+}
+.s-btn:hover { border-color: var(--pink); background: #FFF5FA; }
+.s-btn.selected { border-color: var(--pink); background: #FFF0F7; box-shadow: 0 0 0 3px rgba(204,0,102,0.1); }
+.s-btn input { position: absolute; opacity: 0; width: 0; height: 0; }
+.s-btn-icon { font-size: 20px; line-height: 1; }
+.s-btn-name { font-size: 10px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.3; }
+.s-btn.selected .s-btn-name { color: var(--pink); }
+.s-btn-ck {
+  position: absolute; top: 4px; right: 4px;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--pink); color: #fff;
+  font-size: 7px; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+}
+.s-btn.selected .s-btn-ck { opacity: 1; }
+.s-logo { display: block; }
+.s-logo-wrap {
+  display: flex; align-items: center; justify-content: center;
+  background: #111; border-radius: 4px;
+  padding: 4px 6px; width: 80px; height: 32px;
+}
+.s-logo-img { max-width: 76px; max-height: 28px; object-fit: contain; display: block; }
+
+/* ━━ MNP TOGGLE ━━ */
+.mnp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* ━━ CTA ━━ */
+.cta-btn {
+  width: 100%; margin-top: 14px; padding: 15px;
+  background: var(--pink);
+  border: none; border-radius: 12px;
+  color: #fff; font-family: 'Noto Sans JP', sans-serif;
+  font-size: 16px; font-weight: 900; letter-spacing: 1px;
+  cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 4px 18px rgba(204,0,102,0.35);
+  transition: all .2s;
+}
+.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(204,0,102,0.5); }
+.cta-btn:active { transform: translateY(0); }
+.cta-sub { display: block; font-size: 10px; font-weight: 400; opacity: .8; margin-top: 2px; }
+
+/* ━━ RESULT ━━ */
+.result-placeholder { padding: 44px 16px; text-align: center; }
+.result-placeholder-icon { font-size: 46px; opacity: 0.18; }
+.result-placeholder-text { font-size: 12px; color: #999; margin-top: 10px; line-height: 1.7; }
+
+.result-content { display: none; }
+.result-content.visible { display: block; }
+
+.score-block {
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--cream-dk);
+  text-align: center;
+}
+.score-intro { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
+.score-badge {
+  display: inline-block;
+  background: var(--pink); color: #fff;
+  font-size: 12px; font-weight: 700;
+  padding: 3px 16px; border-radius: 20px;
+  margin-bottom: 8px; letter-spacing: .5px;
+}
+.score-num-wrap {
+  position: relative; display: inline-block;
+  background: var(--board-bg); border-radius: 10px;
+  padding: 12px 18px 10px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+  min-width: 190px;
+}
+.sparkle {
+  position: absolute; font-size: 16px; pointer-events: none;
+  animation: spk 1.6s ease-in-out infinite;
+}
+.sparkle:nth-child(1){ top:-8px;  left:-6px;  animation-delay:0s;  }
+.sparkle:nth-child(2){ top:-8px;  right:-6px; animation-delay:.55s; }
+.sparkle:nth-child(3){ bottom:-4px;left:8px;  animation-delay:.9s; }
+.sparkle:nth-child(4){ bottom:-4px;right:8px; animation-delay:.3s; }
+@keyframes spk {
+  0%,100%{ transform:scale(1) rotate(0deg);   opacity:.6; }
+  50%    { transform:scale(1.35)rotate(20deg); opacity:1;  }
+}
+.score-num {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: clamp(42px,9vw,62px);
+  color: var(--gold); line-height:1; letter-spacing:2px;
+  text-shadow: 0 0 10px rgba(255,215,0,0.9), 0 0 28px rgba(255,215,0,0.4);
+  animation: sglow 5s infinite;
+}
+@keyframes sglow{
+  0%,100%{opacity:1;} 90%{opacity:1;} 93%{opacity:.8;} 96%{opacity:1;}
+}
+.score-yen {
+  font-family:'DotGothic16',monospace;
+  font-size:16px; color:rgba(255,215,0,.75); margin-left:3px;
+}
+
+/* ━━ EQUIV ━━ */
+.equiv-block { padding: 14px 18px; border-bottom: 1px solid var(--cream-dk); }
+.equiv-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.equiv-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; background: var(--white);
+  border-radius: 8px; margin-bottom: 5px;
+}
+.equiv-row:last-child { margin-bottom: 0; }
+.equiv-icon { font-size: 20px; width: 26px; text-align: center; flex-shrink: 0; }
+.equiv-info { flex: 1; min-width: 0; }
+.equiv-name  { font-size: 12px; font-weight: 700; color: var(--text); }
+.equiv-price { font-size: 10px; color: var(--text-sub); }
+.equiv-arr   { font-size: 12px; color: var(--pink); flex-shrink: 0; }
+.equiv-val   { display: flex; align-items: baseline; gap: 2px; flex-shrink: 0; white-space: nowrap; }
+.equiv-about { font-size: 9px; color: var(--text-sub); }
+.equiv-count { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--pink); line-height:1; letter-spacing:.5px; }
+.equiv-unit  { font-size:10px; color:var(--text-sub); }
+
+/* ━━ BREAKDOWN ━━ */
+.bdown-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 6px 10px; background: var(--white);
+  border-radius: 7px; margin-bottom: 5px; font-size: 12px;
+}
+.bdown-row:last-child { margin-bottom: 0; }
+.bdown-row.total {
+  background: var(--pink); margin-top: 8px;
+}
+.bdown-label { color: var(--text-sub); }
+.bdown-sub   { font-size: 10px; color: #aaa; }
+.bdown-link  { color: var(--pink); text-decoration: underline; }
+.bdown-val   { font-family:'Bebas Neue',sans-serif; font-size:16px; color:var(--text); letter-spacing:.5px; }
+.bdown-val.gold  { color: #C07800; }
+.bdown-val.white { color: #fff; font-size:18px; }
+.bdown-label.white { color: rgba(255,255,255,.85); }
+
+/* ━━ QOL ━━ */
+.qol-block { padding: 14px 18px; }
+.qol-head {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  margin-bottom: 10px;
+}
+.qol-card {
+  background: var(--white); border: 1px solid var(--cream-dk);
+  border-radius: 10px; padding: 11px 13px; margin-bottom: 7px;
+}
+.qol-card:last-child { margin-bottom: 0; }
+.qol-card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.qol-tag {
+  font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 8px;
+  background: rgba(204,0,102,0.08); color: var(--pink);
+  border: 1px solid rgba(204,0,102,0.18);
+}
+.qol-title { font-size: 12px; font-weight: 700; color: var(--text); }
+.qol-desc  { font-size: 11px; color: var(--text-sub); line-height: 1.6; }
+
+@media (max-width: 520px) {
+  .campaign-section { padding: 20px 16px; }
+  .campaign-title { font-size: 17px; }
+  .campaign-compare { flex-direction: column; gap: 8px; }
+  .campaign-compare-vs { text-align: center; }
+  .campaign-compare-item { padding: 12px; }
+  .cmp-pt { font-size: 22px; }
+  .cmp-pt span { font-size: 28px; }
+  .score-num { font-size: 52px; }
+  .bdown-label { font-size: 12px; }
+  .bdown-val { font-size: 14px; }
+  .campaign-btn { font-size: 12px; letter-spacing: 0; padding: 14px 16px; display: block; width: 100%; box-sizing: border-box; }
+}
+
+.qol-price {
+  display: inline-block; margin-top: 6px;
+  font-family:'Bebas Neue',sans-serif; font-size:16px;
+  color: var(--pink); letter-spacing:.5px;
+}
+
+/* ━━ CAMPAIGN SECTION ━━ */
+.campaign-wrap {
+  max-width: 860px;
+  margin: 16px auto 0;
+  padding: 0 14px;
+}
+.campaign-section {
+  margin-top: 0;
+  background: var(--cream); border: 2px solid var(--pink);
+  border-radius: 16px; padding: 28px 24px; text-align: center;
+}
+.campaign-badge {
+  display: inline-block;
+  background: var(--pink); color: #fff;
+  font-size: 11px; font-weight: 900; letter-spacing: 1px;
+  padding: 3px 12px; border-radius: 20px; margin-bottom: 12px;
+}
+.campaign-title {
+  font-size: 20px; font-weight: 900; color: var(--text);
+  line-height: 1.4; margin-bottom: 10px;
+}
+.campaign-title span { color: var(--pink); }
+.campaign-desc {
+  font-size: 13px; color: var(--text-sub); line-height: 1.8;
+  margin-bottom: 20px; text-align: left;
+}
+.cmp-table {
+  width: 100%; border-collapse: collapse;
+  margin-bottom: 20px; font-size: 13px;
+  border-radius: 10px; overflow: hidden;
+  table-layout: fixed;
+}
+.cmp-table th, .cmp-table td {
+  padding: 11px 14px; border: 1px solid var(--border); text-align: center;
+}
+.cmp-table thead th {
+  font-size: 11px; font-weight: 700;
+  background: var(--cream-dk); color: var(--text-sub);
+}
+.cmp-table thead th.col-mvp {
+  background: var(--pink); color: #fff; letter-spacing: .3px;
+}
+.cmp-table tbody td { background: #fff; }
+.cmp-table td.row-label, .cmp-table th:first-child {
+  text-align: left; color: var(--text); font-size: 12px; font-weight: 700;
+  background: #fff; word-break: break-word; width: 52%;
+}
+.cmp-table td.col-other { color: #999; font-size: 12px; }
+.cmp-table td.col-mvp  { color: var(--pink); font-weight: 900; background: rgba(204,0,102,0.05); }
+.cmp-o { color: var(--pink); font-size: 22px; font-weight: 900; line-height: 1; }
+.cmp-x { color: #aaa; font-size: 14px; line-height: 1; }
+.campaign-btn {
+  display: inline-block;
+  background: var(--pink); color: #fff;
+  font-size: 15px; font-weight: 900;
+  padding: 16px 36px; border-radius: 50px;
+  text-decoration: none; letter-spacing: .5px;
+  box-shadow: 0 4px 14px rgba(204,0,102,0.35);
+  transition: opacity .2s;
+}
+.campaign-btn:hover { opacity: .85; }
+.campaign-btn-sub { font-size: 11px; font-weight: 400; display: block; margin-top: 3px; opacity: .85; }
+@media (max-width: 520px) {
+  .campaign-btn { font-size: 12px; letter-spacing: 0; padding: 14px 16px; display: block; width: 100%; box-sizing: border-box; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━
+   FOOTER
+━━━━━━━━━━━━━━━━━━ */
+.site-footer {
+  background: var(--pink); padding: 20px 16px; text-align: center;
+}
+.footer-logo {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; margin-bottom: 6px;
+}
+.footer-r {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  font-family:'Bebas Neue',sans-serif; font-size:18px; color:#fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.footer-brand { font-size:15px; font-weight:900; color:#fff; letter-spacing:1px; }
+.footer-tagline { font-size:13px; font-weight:700; color:#fff; margin-bottom:6px; }
+.footer-note {
+  font-size:10px; color:rgba(255,255,255,0.6);
+  line-height:1.8; max-width:560px; margin:0 auto;
+}
+
+/* ━━ ANIM ━━ */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.anim-in { animation: fadeUp .35s ease forwards; }
+
+@media (max-width: 480px) {
+  .hero-center .led-frame { width: 94%; padding: 12px 14px 10px; }
+  .led-title { font-size: 15px; letter-spacing: 0.5px; }
+  .main-wrap { padding: 16px 10px 0; }
+  .campaign-wrap { padding: 0 10px; }
+  .panel-body { padding: 14px 12px; }
+  .field-label { white-space: normal; }
+  .cmp-table th, .cmp-table td { padding: 9px 8px; }
+}
+@media (max-width: 340px) {
+  .led-title { font-size: 13px; letter-spacing: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ━━ HERO ━━ -->
+<div class="hero">
+
+  <!-- 球場シーン（照明・国旗・看板・観客席：JSで描画） -->
+  <svg class="hero-scene" id="heroScene" viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+
+  <!-- 中央：旗＋電子看板 -->
+  <div class="hero-center">
+<div class="led-frame">
+      <div class="led-dots"></div>
+      <div class="led-title">野球ファンが楽天モバイルに乗り換えると、野球ライフはどう変わる？</div>
+    </div>
+  </div>
+</div>
+
+<!-- ━━ MAIN ━━ -->
+<div class="main-wrap">
+  <div class="two-col">
+
+    <!-- LEFT -->
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-head-title">⚾️入力してみよう！</div>
+        </div>
+        <div class="panel-body">
+
+          <div class="q-block">
+            <div class="q-head">
+              <div class="q-num">1</div>
+              <div class="q-label">現在のスマホ料金とデータ使用量を教えてください</div>
+            </div>
+            <div class="field-row">
+              <div class="field-label">月のスマホ料金（税込）</div>
+              <input type="text" inputmode="numeric" class="fee-input" id="feeInput" placeholder="例）8,800" autocomplete="off">
+              <span class="field-unit">円</span>
+            </div>
+            <div class="field-row">
+              <div class="field-label">月のデータ使用量</div>
+              <select class="data-select" id="dataSelect">
+                <option value="" disabled selected>選択してください</option>
+                <option value="3gb">3GB 以下</option>
+                <option value="20gb">3〜20GB</option>
+                <option value="unlimited">20GB 超</option>
+              </select>
+              <span class="field-unit">GB</span>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-head">
+              <div class="q-num">2</div>
+              <div class="q-label">野球観戦スタイルについて教えてください</div>
+            </div>
+
+            <div class="sub-label">主に見るリーグは？</div>
+            <div class="league-grid">
+              <label class="l-btn" id="lbtn-se">
+                <input type="radio" name="league" value="se">
+                <div class="l-btn-ck">✓</div>
+                <div class="l-btn-name">セ・リーグ</div>
+              </label>
+              <label class="l-btn" id="lbtn-pa">
+                <input type="radio" name="league" value="pa">
+                <div class="l-btn-ck">✓</div>
+                <div class="l-btn-name">パ・リーグ</div>
+              </label>
+              <label class="l-btn league-btn-full" id="lbtn-both">
+                <input type="radio" name="league" value="both">
+                <div class="l-btn-ck">✓</div>
+                <div class="l-btn-name">両方</div>
+              </label>
+            </div>
+
+            <div class="sub-label">試合中継はどうやって見ていますか？</div>
+            <div class="svc-grid-top">
+              <label class="s-btn" id="sbtn-tv">
+                <input type="checkbox">
+                <div class="s-btn-ck">✓</div>
+                <div class="s-btn-name">地上波</div>
+              </label>
+              <label class="s-btn" id="sbtn-pa">
+                <input type="checkbox">
+                <div class="s-btn-ck">✓</div>
+                <div class="s-btn-name">パ・リーグTV</div>
+              </label>
+              <label class="s-btn" id="sbtn-dazn">
+                <input type="checkbox">
+                <div class="s-btn-ck">✓</div>
+                <div class="s-btn-name">DAZN</div>
+              </label>
+            </div>
+            <div class="svc-grid-bottom">
+              <label class="s-btn" id="sbtn-sky">
+                <input type="checkbox">
+                <div class="s-btn-ck">✓</div>
+                <div class="s-btn-name">スカパー！</div>
+              </label>
+              <label class="s-btn" id="sbtn-other">
+                <input type="checkbox">
+                <div class="s-btn-ck">✓</div>
+                <div class="s-btn-name">その他</div>
+              </label>
+            </div>
+          </div>
+
+          <button class="cta-btn" onclick="calculate()">
+            結果を見る
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <div class="panel" id="resultPanel">
+        <div class="panel-head">
+          <div class="panel-head-title">⚾️結果はこちら！</div>
+        </div>
+        <div class="panel-body" style="padding:0;">
+
+          <div class="result-placeholder" id="resultPlaceholder">
+            <div class="result-placeholder-icon">🏟️</div>
+            <div class="result-placeholder-text">左のフォームを入力して<br>「結果を見る」を押してください</div>
+          </div>
+
+          <div class="result-content" id="resultContent">
+            <div class="score-block">
+              <div class="score-intro">楽天モバイルに乗り換えると…</div>
+              <div class="score-badge">年間おトク額</div><br>
+              <div class="score-num-wrap">
+                <div class="sparkle">✨</div>
+                <div class="sparkle">✨</div>
+                <div class="sparkle">✨</div>
+                <div class="sparkle">✨</div>
+                <span class="score-num" id="resultNum">0</span><span class="score-yen">円</span>
+              </div>
+            </div>
+
+            <div class="equiv-block" id="breakdownBlock">
+              <div class="equiv-title">年間おトク額の内訳</div>
+              <div id="breakdownRows"></div>
+            </div>
+
+            <div class="equiv-block">
+              <div class="equiv-title">野球換算すると…</div>
+              <div id="equivRows"></div>
+            </div>
+
+            <div class="qol-block">
+              <div class="qol-head"><span>📣</span>浮いたお金で、もっと野球を楽しもう！</div>
+              <div id="qolCards"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CAMPAIGN -->
+<div class="campaign-wrap">
+<div class="campaign-section">
+  <div class="campaign-badge">社員からの紹介特典</div>
+  <div class="campaign-title">楽天社員からの紹介だと<br><span>14,000ポイント</span>もらえる！</div>
+  <div class="campaign-desc">
+    誰から紹介されるかで、もらえるポイントが変わります。<br>
+    <strong><mark style="background:rgba(255,230,0,0.45); padding:1px 3px; border-radius:2px;">楽天グループ社員からの紹介なら、通常より1,000ポイント多い14,000ポイント。2回線目・再契約・ホームルーターも対象に。</mark></strong><br>
+    せっかく乗り換えるなら、お得なルートを選びましょう。
+  </div>
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>通常の紹介</th>
+        <th class="col-mvp">社員紹介</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-label">付与ポイント</td>
+        <td class="col-other">13,000pt</td>
+        <td class="col-mvp">14,000pt</td>
+      </tr>
+      <tr>
+        <td class="row-label">2回線目・再契約</td>
+        <td class="col-other"><span class="cmp-x">✕</span></td>
+        <td class="col-mvp"><span class="cmp-o">○</span></td>
+      </tr>
+      <tr>
+        <td class="row-label">Rakuten Turbo<br><small style="font-weight:400;color:#666;">（工事不要・ホームルーター）</small></td>
+        <td class="col-other"><span class="cmp-x">✕</span></td>
+        <td class="col-mvp"><span class="cmp-o">○</span><br><small style="color:var(--pink);font-size:11px;font-weight:900;line-height:1.4;">7,000pt</small></td>
+      </tr>
+    </tbody>
+  </table>
+  <a class="campaign-btn" href="https://r10.to/hk6Qww" target="_blank" onclick="if(typeof gtag==='function')gtag('event','click_affiliate',{event_category:'affiliate',event_label:'キャンペーンボタン'})">
+    キャンペーン詳細・申し込みはこちら
+    <span class="campaign-btn-sub">楽天モバイル公式サイトへ</span>
+  </a>
+</div>
+</div>
+
+<!-- FOOTER -->
+<div class="site-footer">
+  <div class="footer-logo">
+    <div class="footer-r">R</div>
+    <div class="footer-brand">Rakuten Mobile</div>
+  </div>
+  <div class="footer-tagline">楽天モバイルは野球ファンの強い味方！<br>おトクにスマホを使って、もっと野球を楽しもう！</div>
+  <div class="footer-note">
+    ※本シミュレーターの結果は試算です。実際の料金・特典は楽天モバイル公式サイトをご確認ください。<br>
+    ※楽天モバイル最強プラン：〜3GB 1,078円、3〜20GB 2,178円、20GB超 3,278円（税込）<br>
+    ※本シミュレーターはMNP乗り換えベース（従業員紹介キャンペーン14,000pt）で計算しています。新規契約の場合は11,000ptとなるため、年間節約額は異なります。<br>
+    ※従業員紹介キャンペーンポイントは期間限定。付与条件・有効期限は公式サイトをご確認ください。
+  </div>
+</div>
+
+<script>
+const RAKUTEN_FEES = { '3gb':1078, '20gb':2178, 'unlimited':3278 };
+const PA_MONTHLY   = 1595;
+const DAZN_PT_BACK = 572;
+const MAG_MONTHLY  = 597;
+const PT_MNP = 14000;
+
+const EQUIVS = [
+  { emoji:'🍺', name:'球場ビール',       unit:'杯', price:800   },
+  { emoji:'🍱', name:'スタジアムグルメ', unit:'個', price:1000  },
+  { emoji:'🎫', name:'チケット',         unit:'枚', price:4000  },
+  { emoji:'👕', name:'グッズ',           unit:'個', price:3000  },
+  { emoji:'✈️', name:'遠征',             unit:'回', price:30000 },
+];
+
+const QOL = {
+  pa:       { icon:'⚡', title:'パ・リーグ全試合が追加料金なし！',  desc:'楽天モバイルなら、パ・リーグ主催の試合が「パ・リーグSpecial」で見放題。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上、キャンプやファン感謝祭など配信。「パ・リーグTV」からの乗り換えも検討してみてもいいかも？', price:'パ・リーグTV月額1,595円 → 0円' },
+  pa_tv:    { icon:'⚡', title:'パ・リーグ全試合が見放題に',         desc:'地上波では観られない試合も、楽天モバイルならパ・リーグ主催の試合が「パ・リーグSpecial」で追加料金ゼロで見放題。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上、さらにキャンプやファン感謝祭まで配信。外出先でもスマホで見逃しなし！', price:'月1,595円相当 → 0円' },
+  pa_new:   { icon:'⚡', title:'パ・リーグ全試合が見放題に',         desc:'楽天モバイルに乗り換えると「パ・リーグSpecial」が追加料金ゼロで使えます。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上をライブ配信。外出先や球場でも見逃しなし。', price:'月1,595円相当 → 0円' },
+  pa_paid:  { icon:'⚡', title:'パ・リーグ全試合が見放題に',         desc:'今の視聴サービスに加えて、楽天モバイルなら「パ・リーグSpecial」も追加料金ゼロ。ファーム9球団の公式戦やキャンプ・ファン感謝祭など、より充実したパ・リーグライフを楽しめます。', price:'月1,595円相当 → 0円' },
+  se_cross: { icon:'⚡', title:'パ・リーグ全試合が見放題に',           desc:'楽天モバイルに乗り換えると「パ・リーグSpecial」が無料。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上をライブ配信。交流戦や日本シリーズで気になったパ・リーグの推しもすぐ追いかけられます。', price:'月1,595円相当 → 0円' },
+  dazn:     { icon:'🎬', title:'DAZNがずっと15％OFF',               desc:'楽天モバイル経由でDAZN standardを申し込むと、毎月572ポイント還元。野球以外にも国内外のスポーツが見放題。定価契約中の方も変更できます（一部アカウントを除く）。', price:'毎月572ポイント還元' },
+  mag:      { icon:'📖', title:'野球雑誌を毎月無料で読み放題',      desc:'楽天モバイルなら、週刊ベースボールなど、「楽天マガジン」から厳選された1,000冊以上の雑誌が毎月3冊無料。',                                          price:'月597円相当 → 0円' },
+};
+
+['se','pa','both'].forEach(v => {
+  const el = document.getElementById('lbtn-'+v);
+  el.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.league-grid .l-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  });
+});
+
+['tv','pa','dazn','sky','other'].forEach(v => {
+  const el = document.getElementById('sbtn-'+v);
+  el.addEventListener('click', e => { e.preventDefault(); el.classList.toggle('selected'); });
+});
+
+function animateCounter(el, target, ms) {
+  const start = performance.now();
+  (function tick(now) {
+    const p = Math.min((now-start)/ms, 1);
+    el.textContent = Math.round(target*(1-Math.pow(1-p,3))).toLocaleString('ja-JP');
+    if (p < 1) requestAnimationFrame(tick);
+  })(start);
+}
+
+/* ── 球場ヒーローシーン生成 ── */
+(function buildHeroScene(){
+  const svg = document.getElementById('heroScene');
+  if (!svg) return;
+  const W = 1200, H = 460;
+  const rnd = (a,b)=> a + Math.random()*(b-a);
+  const pick = arr => arr[(Math.random()*arr.length)|0];
+
+  /* defs：空・照明・看板・観客の陰影 */
+  const defs = `
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a4a9e"/>
+      <stop offset="0.55" stop-color="#163f88"/>
+      <stop offset="1" stop-color="#102e6a"/>
+    </linearGradient>
+    <radialGradient id="lightGlow">
+      <stop offset="0" stop-color="rgba(214,232,255,0.85)"/>
+      <stop offset="0.5" stop-color="rgba(170,202,255,0.22)"/>
+      <stop offset="1" stop-color="rgba(170,202,255,0)"/>
+    </radialGradient>
+    <radialGradient id="lampGlow">
+      <stop offset="0" stop-color="rgba(255,255,255,0.95)"/>
+      <stop offset="0.55" stop-color="rgba(228,240,255,0.25)"/>
+      <stop offset="1" stop-color="rgba(228,240,255,0)"/>
+    </radialGradient>
+    <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d50b70"/>
+      <stop offset="1" stop-color="#a4004f"/>
+    </linearGradient>
+    <linearGradient id="crowdShade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="rgba(4,8,20,0)"/>
+      <stop offset="1" stop-color="rgba(3,6,16,0.55)"/>
+    </linearGradient>`;
+
+  /* 観客スタンド：左右が高く中央が低いボウル状に頭部を密に敷き詰める */
+  function buildCrowd(){
+    /* ベース：彩度高めの青系 */
+    const palette = ['#1e3d7a','#243f88','#2a4a94','#1a3570','#2d4e8c','#203680'];
+    /* 明るい色：水色・白シャツ */
+    const bright  = ['#4a82d8','#5a92e8','#7ab0f0','#d8e8f8','#e8f2ff','#c8dcf4'];
+    /* 楽天カラー：赤・クリムゾン */
+    const rakuten = ['#cc1a2e','#dd2233','#c41020','#e02838','#b81020'];
+    /* アクセント：黄色・オレンジ */
+    const accent  = ['#e8a800','#f0b800','#d89600'];
+    let out = '';
+    const yBot = 402;
+    let y = 188;
+    while (y < yBot){
+      const t = (y - 188) / (yBot - 188);
+      const r = 1.9 + t*3.4;
+      const gap = r*1.85;
+      for (let x = gap*0.5; x < W; x += gap){
+        const cd = Math.abs(x-600)/600;
+        const topY = 288 - 124*cd;
+        if (y < topY) continue;
+        const cx = x + rnd(-gap*0.28, gap*0.28);
+        const cy = y + rnd(-r*0.6, r*0.6);
+        const rr = Math.random();
+        const col = rr < 0.22 ? pick(bright)
+                  : rr < 0.38 ? pick(rakuten)
+                  : rr < 0.43 ? pick(accent)
+                  : pick(palette);
+        out += `<ellipse cx="${cx.toFixed(1)}" cy="${(cy+r).toFixed(1)}" rx="${(r*1.25).toFixed(1)}" ry="${(r*0.85).toFixed(1)}" fill="${col}" opacity="0.55"/>`;
+        out += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${col}"/>`;
+      }
+      y += gap*0.82;
+    }
+    out += `<rect x="0" y="188" width="${W}" height="${yBot-188}" fill="url(#crowdShade)"/>`;
+    return out;
+  }
+
+  /* 照明塔（バンク＋ランプ格子＋支柱） */
+  function buildLight(cx, cy, flip){
+    const rot = flip ? -8 : 8;
+    let g = '';
+    /* 支柱（左右対称・バンク幅に合わせた間隔） */
+    g += `<line x1="${cx-32}" y1="${cy+28}" x2="${cx-32}" y2="${H}" stroke="#161d30" stroke-width="5"/>`;
+    g += `<line x1="${cx+32}" y1="${cy+28}" x2="${cx+32}" y2="${H}" stroke="#161d30" stroke-width="5"/>`;
+    /* グロー＋バンク（傾き付き） */
+    g += `<g transform="translate(${cx},${cy}) rotate(${rot})">`;
+    g += `<ellipse cx="0" cy="-2" rx="98" ry="72" fill="url(#lightGlow)"/>`;
+    g += `<rect x="-60" y="-30" width="120" height="58" rx="6" fill="#222a3c" stroke="#3a455e" stroke-width="2"/>`;
+    for (let r=0; r<4; r++){
+      for (let c=0; c<7; c++){
+        const lx = -48 + c*16;
+        const ly = -20 + r*14;
+        g += `<circle cx="${lx}" cy="${ly}" r="5.4" fill="#e6f0ff"/>`;
+        g += `<circle cx="${lx}" cy="${ly}" r="6.5" fill="url(#lampGlow)"/>`;
+      }
+    }
+    g += `</g>`;
+    return g;
+  }
+
+  /* 国旗（中央上部・3本：左=緑／中央=日の丸／右=水色） */
+  function buildFlags(){
+    const baseY = 108;
+    const items = [
+      { x: 512, type: 'green' },
+      { x: 600, type: 'jp'    },
+      { x: 688, type: 'blue'  }
+    ];
+    let g = '';
+    items.forEach((it, i) => {
+      const arch = (i === 1) ? 1 : 0.42;
+      const poleH = 48 + arch*30;
+      const topY = baseY - poleH;
+      const x = it.x;
+      g += `<line x1="${x}" y1="${baseY}" x2="${x}" y2="${topY}" stroke="#aab2c0" stroke-width="2.6"/>`;
+      g += `<circle cx="${x}" cy="${topY}" r="2.8" fill="#dfe6f0"/>`;
+      const fw = 40, fh = 26, fx = x + 2, fy = topY + 1;
+      if (it.type === 'green'){
+        g += `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="#1f9b46"/>`;
+      } else if (it.type === 'blue'){
+        g += `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="#74c7ec"/>`;
+      } else {
+        g += `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="#ffffff"/>`;
+        g += `<circle cx="${fx+fw/2}" cy="${fy+fh/2}" r="8" fill="#bc002d"/>`;
+      }
+      g += `<rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="0.6"/>`;
+    });
+    return g;
+  }
+
+  /* 外野フェンス（ホームベースから見た外野の壁＋ウォーニングトラック＋芝） */
+  function buildFence(){
+    const fenceTop = 400, fenceBot = 420, trackBot = 436;
+    let g = '';
+    /* 土（ウォーニングトラック）最下部 */
+    g += `<rect x="0" y="${trackBot}" width="${W}" height="${H-trackBot}" fill="#8a6a42"/>`;
+    /* フェンス内側の芝（壁の内側・グラウンド側） */
+    g += `<rect x="0" y="${fenceBot}" width="${W}" height="${trackBot-fenceBot}" fill="#163a22"/>`;
+    /* 外野フェンス（濃緑の壁） */
+    g += `<rect x="0" y="${fenceTop}" width="${W}" height="${fenceBot-fenceTop}" fill="#163a22"/>`;
+    g += `<rect x="0" y="${fenceTop}" width="${W}" height="3" fill="rgba(255,255,255,0.06)"/>`;
+    /* フェンス上端の黄色ライン（ホームランライン） */
+    g += `<rect x="0" y="${fenceTop-4}" width="${W}" height="5" fill="#d8c95a"/>`;
+    /* フェンス下端の影 */
+    g += `<rect x="0" y="${fenceBot-3}" width="${W}" height="3" fill="rgba(0,0,0,0.45)"/>`;
+    return g;
+  }
+
+  let html = `<defs>${defs}</defs>`;
+  html += `<rect x="0" y="0" width="${W}" height="${H}" fill="url(#skyGrad)"/>`;
+  html += buildLight(132, 70, false) + buildLight(1068, 70, true);
+  /* 旗はHTMLオーバーレイ側に移動したためSVGでは描画しない */
+  html += buildCrowd();
+  html += buildFence();
+  svg.innerHTML = html;
+})();
+
+function calculate() {
+  // GA4：「結果を見る」クリック計測
+  if (typeof gtag === 'function') {
+    gtag('event', 'click_calculate', { event_category: 'engagement', event_label: '結果を見る' });
+  }
+  const rawFee = document.getElementById('feeInput').value.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[^0-9]/g, '');
+  const fee  = parseInt(rawFee, 10);
+  const data = document.getElementById('dataSelect').value;
+  if (!fee || !data) { alert('月額料金とデータ使用量を入力してください。'); return; }
+
+  const rakFee   = RAKUTEN_FEES[data];
+  const viewPa   = document.getElementById('sbtn-pa').classList.contains('selected');
+  const viewDazn = document.getElementById('sbtn-dazn').classList.contains('selected');
+  const viewSky  = document.getElementById('sbtn-sky').classList.contains('selected');
+  const viewTv   = document.getElementById('sbtn-tv').classList.contains('selected');
+  const leagueSe = document.getElementById('lbtn-se').classList.contains('selected');
+
+  const mobileSaving = Math.max(fee - rakFee, 0);
+  const paSaving     = viewPa   ? PA_MONTHLY   : 0;
+  const daznSaving   = viewDazn ? DAZN_PT_BACK : 0;
+  const annualMobile = mobileSaving * 12;
+  const annualPa     = paSaving     * 12;
+  const annualDazn   = daznSaving   * 12;
+  const total        = annualMobile + annualPa + annualDazn + PT_MNP;
+
+  /* 内訳 */
+  let bhtml = '';
+  if (mobileSaving > 0) {
+    bhtml += brow('スマホ通信費', `(今の月額 ${fee.toLocaleString()}円 − 楽天モバイル月額 ${rakFee.toLocaleString()}円) × 12ヶ月`, `${annualMobile.toLocaleString()}円`);
+  } else if (fee < rakFee) {
+    bhtml += brow('スマホ通信費', '現在の方が安い', '−');
+  }
+  if (annualPa > 0) bhtml += brow('パ・リーグTV', `${PA_MONTHLY.toLocaleString()}円 × 12ヶ月`, `${annualPa.toLocaleString()}円`);
+  if (annualDazn > 0) bhtml += brow('DAZNポイント還元', `${DAZN_PT_BACK}ポイント × 12ヶ月`, `${annualDazn.toLocaleString()}ポイント`);
+  bhtml += brow('社員からの紹介特典', '初年特典｜<a href="https://r10.to/hk6Qww" target="_blank" class="bdown-link" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'click_affiliate\',{event_category:\'affiliate\',event_label:\'結果パネルリンク\'})">詳細はこちら</a>', `${PT_MNP.toLocaleString()}ポイント`, 'gold');
+  bhtml += `<div class="bdown-row total"><span class="bdown-label white">合計（年間）</span><span class="bdown-val white">${total.toLocaleString()}円相当</span></div>`;
+  document.getElementById('breakdownRows').innerHTML = bhtml;
+
+  const skyEquiv = viewSky ? [{ emoji:'📡', name:'スカパー！（プロ野球セット）', unit:'ヶ月', price:4000 }] : [];
+  document.getElementById('equivRows').innerHTML = [...skyEquiv, ...EQUIVS].map(e => `
+    <div class="equiv-row">
+      <div class="equiv-icon">${e.emoji}</div>
+      <div class="equiv-info">
+        <div class="equiv-name">${e.name}</div>
+        <div class="equiv-price">(${e.price.toLocaleString()}円/${e.unit})</div>
+      </div>
+      <div class="equiv-arr">▶</div>
+      <div class="equiv-val">
+        <span class="equiv-about">約</span>
+        <span class="equiv-count">${Math.floor(total/e.price).toLocaleString()}</span>
+        <span class="equiv-unit">${e.unit}分</span>
+      </div>
+    </div>`).join('');
+
+  const paCard = viewPa ? QOL.pa : (leagueSe ? QOL.se_cross : ((viewDazn || viewSky) ? QOL.pa_paid : (viewTv ? QOL.pa_tv : QOL.pa_new)));
+  const items = [paCard];
+  if (viewDazn) items.push(QOL.dazn);
+  items.push(QOL.mag);
+
+  document.getElementById('qolCards').innerHTML = items.map(q => `
+    <div class="qol-card">
+      <div class="qol-card-top"><span>${q.icon}</span></div>
+      <div class="qol-title">${q.title}</div>
+      <div class="qol-desc">${q.desc}</div>
+      <div class="qol-price">${q.price}</div>
+    </div>`).join('');
+
+  document.getElementById('resultPlaceholder').style.display = 'none';
+  const c = document.getElementById('resultContent');
+  c.classList.add('visible','anim-in');
+  animateCounter(document.getElementById('resultNum'), total, 1200);
+
+  if (window.innerWidth < 680)
+    document.getElementById('resultPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+
+function brow(label, sub, val, cls) {
+  return `<div class="bdown-row">
+    <div><div class="bdown-label">${label}</div><div class="bdown-sub">${sub}</div></div>
+    <div class="bdown-val${cls ? ' '+cls : ''}">${val}</div>
+  </div>`;
+}
+</script>
+</body>
+</html>
