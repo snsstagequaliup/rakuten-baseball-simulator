@@ -807,7 +807,8 @@ body {
   </div>
   <div class="footer-tagline">楽天モバイルは野球ファンの強い味方！<br>おトクにスマホを使って、もっと野球を楽しもう！</div>
   <div class="footer-note">
-    ※本サイトは、運営者（楽天グループ社員）による楽天モバイル「従業員紹介キャンペーン」の紹介リンク（PR）を含みます。<br>
+    ※本サイトは、運営者（楽天グループ社員）による個人活動であり、楽天モバイルの公式サイトではありません。<br>
+    ※本サイトは、楽天モバイル「従業員紹介キャンペーン」の紹介リンク（PR）を含みます。<br>
     ※本シミュレーターの結果は試算です。実際の料金・特典は楽天モバイル公式サイトをご確認ください。<br>
     ※楽天モバイル最強プラン：〜3GB 1,078円、3〜20GB 2,178円、20GB超 3,278円（税込）<br>
     ※本シミュレーターはMNP乗り換えベース（従業員紹介キャンペーン14,000pt）で計算しています。新規契約の場合は11,000ptとなるため、年間節約額は異なります。<br>
@@ -818,7 +819,6 @@ body {
 <script>
 const RAKUTEN_FEES = { '3gb':1078, '20gb':2178, 'unlimited':3278 };
 const PA_MONTHLY   = 1595;
-const DAZN_PT_BACK = 572;
 const MAG_MONTHLY  = 597;
 const PT_MNP = 14000;
 
@@ -836,7 +836,6 @@ const QOL = {
   pa_new:   { icon:'📺', title:'パ・リーグ全試合が見放題に',         desc:'楽天モバイルに乗り換えると「パ・リーグSpecial」が追加料金ゼロで使えます。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上をライブ配信。外出先や球場でも見逃しなし。', price:'月1,595円相当 → 0円' },
   pa_paid:  { icon:'📺', title:'パ・リーグ全試合が見放題に',         desc:'今の視聴サービスに加えて、楽天モバイルなら「パ・リーグSpecial」も追加料金ゼロ。ファーム9球団の公式戦やキャンプ・ファン感謝祭など、より充実したパ・リーグライフを楽しめます。', price:'月1,595円相当 → 0円' },
   se_cross: { icon:'📺', title:'パ・リーグ全試合が見放題に',           desc:'楽天モバイルに乗り換えると「パ・リーグSpecial」が無料。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上をライブ配信。交流戦や日本シリーズで気になったパ・リーグの推しもすぐ追いかけられます。', price:'月1,595円相当 → 0円' },
-  dazn:     { icon:'🎬', title:'DAZNがずっと15％OFF',               desc:'楽天モバイル経由でDAZN standardを申し込むと、毎月572ポイント還元。野球以外にも国内外のスポーツが見放題。定価契約中の方も変更できます（一部アカウントを除く）。', price:'毎月572ポイント還元' },
   mag:      { icon:'📖', title:'野球雑誌を毎月無料で読み放題',      desc:'楽天モバイルなら、週刊ベースボールなど、「楽天マガジン」から厳選された1,000冊以上の雑誌が毎月3冊無料。',                                          price:'月597円相当 → 0円' },
 };
 
@@ -1033,11 +1032,9 @@ function calculate() {
 
   const mobileSaving = Math.max(fee - rakFee, 0);
   const paSaving     = viewPa   ? PA_MONTHLY   : 0;
-  const daznSaving   = viewDazn ? DAZN_PT_BACK : 0;
   const annualMobile = mobileSaving * 12;
   const annualPa     = paSaving     * 12;
-  const annualDazn   = daznSaving   * 12;
-  const total        = annualMobile + annualPa + annualDazn + PT_MNP;
+  const total        = annualMobile + annualPa + PT_MNP;
 
   /* 内訳 */
   let bhtml = '';
@@ -1047,7 +1044,6 @@ function calculate() {
     bhtml += brow('スマホ通信費', '現在の方が安い', '−');
   }
   if (annualPa > 0) bhtml += brow('パ・リーグTV', `${PA_MONTHLY.toLocaleString()}円 × 12ヶ月`, `${annualPa.toLocaleString()}円`);
-  if (annualDazn > 0) bhtml += brow('DAZNポイント還元', `${DAZN_PT_BACK}ポイント × 12ヶ月`, `${annualDazn.toLocaleString()}ポイント`);
   bhtml += brow('社員からの紹介特典', '初年特典｜<a href="https://r10.to/hk6Qww" target="_blank" class="bdown-link" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'click_affiliate\',{event_category:\'affiliate\',event_label:\'結果パネルリンク\'})">詳細はこちら</a>', `${PT_MNP.toLocaleString()}ポイント`, 'gold');
   bhtml += `<div class="bdown-row total"><span class="bdown-label white">合計（年間）</span><span class="bdown-val white">${total.toLocaleString()}円相当</span></div>`;
   document.getElementById('breakdownRows').innerHTML = bhtml;
@@ -1070,7 +1066,6 @@ function calculate() {
 
   const paCard = viewPa ? QOL.pa : (leagueSe ? QOL.se_cross : ((viewDazn || viewSky) ? QOL.pa_paid : (viewTv ? QOL.pa_tv : QOL.pa_new)));
   const items = [paCard];
-  if (viewDazn) items.push(QOL.dazn);
   items.push(QOL.mag);
 
   document.getElementById('qolCards').innerHTML = items.map(q => `
