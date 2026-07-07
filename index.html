@@ -84,6 +84,7 @@ body {
   width: min(620px, 86%);
   margin: 0;
   pointer-events: auto;
+  container-type: inline-size;
 }
 .sb-trim {
   position: absolute;
@@ -136,9 +137,9 @@ body {
 .led-title {
   font-family: 'DotGothic16', monospace;
   color: var(--gold);
-  font-size: clamp(19px, 3.8vw, 32px);
+  font-size: clamp(11px, 4cqw, 25px);
   line-height: 1.65;
-  letter-spacing: 2px;
+  letter-spacing: clamp(0px, 0.35cqw, 2px);
   position: relative; z-index: 1;
   text-shadow:
     0 0 3px rgba(255,235,0,0.7),
@@ -570,7 +571,6 @@ body {
 
 @media (max-width: 480px) {
   .hero-center .led-frame { width: 94%; padding: 12px 14px 10px; }
-  .led-title { font-size: 15px; letter-spacing: -1px; }
   .main-wrap { padding: 16px 10px 0; }
   .campaign-wrap { padding: 0 10px; }
   .panel-body { padding: 14px 12px; }
@@ -584,9 +584,6 @@ body {
   .equiv-count { font-size: 24px; }
   .campaign-section { padding: 20px 10px; }
   .campaign-desc { font-size: 12px; }
-}
-@media (max-width: 340px) {
-  .led-title { font-size: 13px; letter-spacing: 0; }
 }
 </style>
 </head>
@@ -836,6 +833,7 @@ const QOL = {
   pa_new:   { icon:'📺', title:'パ・リーグ全試合が見放題に',         desc:'楽天モバイルに乗り換えると「パ・リーグSpecial」が追加料金ゼロで使えます。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上をライブ配信。外出先や球場でも見逃しなし。', price:'月1,595円相当 → 0円' },
   pa_paid:  { icon:'📺', title:'パ・リーグ全試合が見放題に',         desc:'今の視聴サービスに加えて、楽天モバイルなら「パ・リーグSpecial」も追加料金ゼロ。ファーム9球団の公式戦やキャンプ・ファン感謝祭など、より充実したパ・リーグライフを楽しめます。', price:'月1,595円相当 → 0円' },
   se_cross: { icon:'📺', title:'パ・リーグ全試合が見放題に',           desc:'楽天モバイルに乗り換えると「パ・リーグSpecial」が無料。一軍公式戦・交流戦・クライマックスシリーズはもちろん、ファーム9球団の公式戦まで年間1,000試合以上をライブ配信。交流戦や日本シリーズで気になったパ・リーグの推しもすぐ追いかけられます。', price:'月1,595円相当 → 0円' },
+  dazn_user:{ icon:'📺', title:'DAZNはそのままで、見られる野球が増える', desc:'一軍のパ・リーグ主催試合はDAZNと重なります。でも「パ・リーグSpecial」には、DAZNでは見られない野球があります。2026年から配信が始まったファーム公式戦（9球団主催）、春季キャンプや練習試合、球団応援番組、全投球シーンを追えるAI「全球ダイジェスト」。楽天モバイルなら、これが追加料金0円でDAZNの隣に並びます。', price:'DAZNは解約不要・追加0円' },
   mag:      { icon:'📖', title:'野球雑誌を毎月無料で読み放題',      desc:'楽天モバイルなら、週刊ベースボールなど、「楽天マガジン」から厳選された1,000冊以上の雑誌が毎月3冊無料。',                                          price:'月597円相当 → 0円' },
 };
 
@@ -1064,7 +1062,7 @@ function calculate() {
       </div>
     </div>`).join('');
 
-  const paCard = viewPa ? QOL.pa : (leagueSe ? QOL.se_cross : ((viewDazn || viewSky) ? QOL.pa_paid : (viewTv ? QOL.pa_tv : QOL.pa_new)));
+  const paCard = viewPa ? QOL.pa : (viewDazn ? QOL.dazn_user : (leagueSe ? QOL.se_cross : (viewSky ? QOL.pa_paid : (viewTv ? QOL.pa_tv : QOL.pa_new))));
   const items = [paCard];
   items.push(QOL.mag);
 
